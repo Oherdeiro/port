@@ -1,46 +1,55 @@
 from flask import Flask, jsonify
 import requests
-from flask_cors import CORS  # Importe o CORS
+from flask_cors import CORS  # Import CORS
 
 app = Flask(__name__)
 
-# Adiciona o CORS ao seu app Flask
-CORS(app)  # Agora todas as rotas aceitam requisições de origens diferentes
+# Add CORS to your Flask app
+CORS(app)  # Now all routes accept requests from different origins
 
-# Sua chave da API
+# Your API key
 API_KEY = '1180bf54-7bb8-45b9-8d22-bf6213ae4358'
 
-# Endpoint da API da CoinMarketCap
+# CoinMarketCap API endpoint
 API_URL = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/quotes/latest'
 
-# Cabeçalhos para autenticação
+# Authentication headers
 headers = {
     'X-CMC_PRO_API_KEY': API_KEY,
     'Accept': 'application/json',
 }
 
-# Função para obter o preço das criptomoedas
+# Function to get cryptocurrency prices
 def get_crypto_prices():
-    # Símbolos das criptomoedas que você deseja consultar
+    # Symbols of the cryptocurrencies you want to query
     parameters = {
-        'symbol': 'BTC,ETH,SOL',  # Usando 'symbol' para consultar múltiplas criptomoedas
+        'symbol': 'BTC,ETH,SOL',  # Querying multiple cryptocurrencies
         'convert': 'USD'
     }
 
-    # Requisição GET para a API
+    # GET request to the API
     response = requests.get(API_URL, headers=headers, params=parameters)
 
-    # Logando o código de status e o conteúdo da resposta para depuração
+    # Log status code and response body for debugging
     print("Status Code:", response.status_code)
     print("Response Body:", response.text)
 
     if response.status_code == 200:
         data = response.json()['data']
-        # Formatar os preços conforme necessário
+        # Format prices and include market changes
         prices = {
-            'bitcoin': round(data['BTC']['quote']['USD']['price']),  # Arredondar para inteiro
-            'ethereum': round(data['ETH']['quote']['USD']['price'], 2),  # 2 casas decimais
-            'solana': round(data['SOL']['quote']['USD']['price'], 2)  # 2 casas decimais
+            'bitcoin': round(data['BTC']['quote']['USD']['price']),  # Round to integer
+            'ethereum': round(data['ETH']['quote']['USD']['price'], 2),  # 2 decimal places
+            'solana': round(data['SOL']['quote']['USD']['price'], 2),  # 2 decimal places
+            'bitcoin_change_24h': round(data['BTC']['quote']['USD']['percent_change_24h'], 2),  # 24h change
+            'ethereum_change_24h': round(data['ETH']['quote']['USD']['percent_change_24h'], 2),  # 24h change
+            'solana_change_24h': round(data['SOL']['quote']['USD']['percent_change_24h'], 2),  # 24h change
+            'bitcoin_change_7d': round(data['BTC']['quote']['USD']['percent_change_7d'], 2),  # 7d change
+            'ethereum_change_7d': round(data['ETH']['quote']['USD']['percent_change_7d'], 2),  # 7d change
+            'solana_change_7d': round(data['SOL']['quote']['USD']['percent_change_7d'], 2),  # 7d change
+            'bitcoin_change_1h': round(data['BTC']['quote']['USD']['percent_change_1h'], 2),  # 1h change
+            'ethereum_change_1h': round(data['ETH']['quote']['USD']['percent_change_1h'], 2),  # 1h change
+            'solana_change_1h': round(data['SOL']['quote']['USD']['percent_change_1h'], 2)  # 1h change
         }
         return prices
     else:
