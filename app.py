@@ -22,10 +22,12 @@ def get_price():
             'symbol': 'BTC,ETH,SOL',  # Coloque os símbolos das criptos que você deseja (Bitcoin, Ethereum, Solana)
             'convert': 'USD'
         })
-        
+
         # Verifica se a requisição foi bem sucedida
+        print("Status Code:", response.status_code)  # Imprime o código de status da resposta
+        
         if response.status_code != 200:
-            return jsonify({"error": "Failed to fetch data from CoinMarketCap"}), 500
+            return jsonify({"error": f"Failed to fetch data from CoinMarketCap. Status Code: {response.status_code}"}), 500
         
         data = response.json()
 
